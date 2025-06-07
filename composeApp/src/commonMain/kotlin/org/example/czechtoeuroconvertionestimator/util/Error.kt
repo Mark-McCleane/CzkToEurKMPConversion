@@ -1,0 +1,3 @@
+package org.example.czechtoeuroconvertionestimator.util
+
+interface Error
