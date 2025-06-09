@@ -14,7 +14,7 @@ class ConvertorViewModel(
     private val repository: ConvertorRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(0F)
+    private val _state = MutableStateFlow(ConvertorState())
     val state = _state.asStateFlow()
 
     private val _error = MutableStateFlow("")
@@ -24,7 +24,12 @@ class ConvertorViewModel(
         viewModelScope.launch {
             repository.convert()
                 .onSuccess { convertorDto ->
-                    _state.update { convertValue * convertorDto.rates.EUR.toFloat() }
+                    _state.update {
+                        ConvertorState(
+                            conversionValue = convertValue * convertorDto.rates.EUR.toFloat(),
+                            conversionRate = convertorDto.rates.EUR.toFloat()
+                        )
+                    }
                 }
                 .onError { networkError ->
                     _error.update {
@@ -32,6 +37,7 @@ class ConvertorViewModel(
                     }
                 }
         }
-
     }
 }
+
+data class ConvertorState(val conversionValue: Float = 0F, val conversionRate: Float = 0F)

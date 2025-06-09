@@ -3,10 +3,12 @@ package org.example.czechtoeuroconvertionestimator
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import czechtoeuroconvertionestimator.composeapp.generated.resources.Res
 import czechtoeuroconvertionestimator.composeapp.generated.resources.compose_multiplatform
 import io.ktor.client.HttpClient
@@ -66,14 +69,19 @@ fun App(client: ConvertorClient) {
                     value = valueToBeConverted,
                     onValueChange = {
                         valueToBeConverted = it
+                        if(it.isNotBlank()){
+                            viewModel.convert(it.toFloat())
+                        }
                     },
                     placeholder = { Text("Please Enter A Value") },
                     singleLine = true,
+                    supportingText = { Text("Czech Koruna") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 Button(onClick = {
-                    showResult = !showResult
-                    viewModel.convert(valueToBeConverted.toFloat())
+                    if (valueToBeConverted.isNotBlank()) {
+                        showResult = !showResult
+                    }
                 }) {
                     Text("Convert!")
                 }
@@ -82,7 +90,8 @@ fun App(client: ConvertorClient) {
                         Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Answer: ${state.toMoneyValue()}")
+                        Spacer(modifier = Modifier.size(10.dp))
+                        Text("Answer: ${state.conversionValue.toMoneyValue()}")
                     }
                 }
             }
