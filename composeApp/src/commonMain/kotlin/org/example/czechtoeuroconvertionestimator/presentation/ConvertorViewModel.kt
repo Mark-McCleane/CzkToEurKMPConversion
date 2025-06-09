@@ -25,10 +25,7 @@ class ConvertorViewModel(
             repository.convert()
                 .onSuccess { convertorDto ->
                     _state.update {
-                        ConvertorState(
-                            conversionValue = convertValue * convertorDto.rates.EUR.toFloat(),
-                            conversionRate = convertorDto.rates.EUR.toFloat()
-                        )
+                        it.copy(conversionValue = convertValue * it.conversionRate)
                     }
                 }
                 .onError { networkError ->
@@ -36,6 +33,18 @@ class ConvertorViewModel(
                         networkError.name
                     }
                 }
+        }
+    }
+
+    fun getConversionRate() {
+        viewModelScope.launch {
+            repository.convert().onSuccess { convertorDto ->
+                _state.update { it.copy(conversionRate = convertorDto.rates.EUR.toFloat()) }
+            }.onError { networkError ->
+                _error.update {
+                    networkError.name
+                }
+            }
         }
     }
 }

@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import czechtoeuroconvertionestimator.composeapp.generated.resources.Res
+import czechtoeuroconvertionestimator.composeapp.generated.resources.allDrawableResources
 import czechtoeuroconvertionestimator.composeapp.generated.resources.compose_multiplatform
 import io.ktor.client.HttpClient
 import org.example.czechtoeuroconvertionestimator.data.ConvertorClient
@@ -50,6 +53,9 @@ fun App(client: ConvertorClient) {
 
         val state by viewModel.state.collectAsState()
 
+        LaunchedEffect(Unit) {
+            viewModel.getConversionRate()
+        }
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -63,39 +69,48 @@ fun App(client: ConvertorClient) {
                     .safeContentPadding()
                     .fillMaxSize()
                     .padding(innerPadding),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 TextField(
                     value = valueToBeConverted,
                     onValueChange = {
                         valueToBeConverted = it
-                        if(it.isNotBlank()){
+                        if (it.isNotBlank()) {
                             viewModel.convert(it.toFloat())
+                            showResult = true
+                        } else {
+                            showResult = false
                         }
                     },
                     placeholder = { Text("Please Enter A Value") },
                     singleLine = true,
-                    supportingText = { Text("Czech Koruna") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    supportingText = { if (state.conversionRate != 0F) Text(text = "Czech Koruna per 1 Euro = ${state.conversionRate} ") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    trailingIcon = {
+                        Text(text = "Kč")
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Button(onClick = {
-                    if (valueToBeConverted.isNotBlank()) {
-                        showResult = !showResult
-                    }
-                }) {
-                    Text("Convert!")
-                }
+
                 AnimatedVisibility(showResult) {
                     Column(
-                        Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Spacer(modifier = Modifier.size(10.dp))
-                        Text("Answer: ${state.conversionValue.toMoneyValue()}")
+                        TextField(
+                            value = state.conversionValue.toMoneyValue(),
+                            onValueChange = {},
+                            singleLine = true,
+                            readOnly = true,
+                            trailingIcon = {
+                                Text("€")
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }
         }
     }
 }
-
