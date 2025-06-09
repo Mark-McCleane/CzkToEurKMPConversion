@@ -21,18 +21,8 @@ class ConvertorViewModel(
     val error = _error.asStateFlow()
 
     fun convert(convertValue: Float) {
-        viewModelScope.launch {
-            repository.convert()
-                .onSuccess { convertorDto ->
-                    _state.update {
-                        it.copy(conversionValue = convertValue * it.conversionRate)
-                    }
-                }
-                .onError { networkError ->
-                    _error.update {
-                        networkError.name
-                    }
-                }
+        _state.update {
+            it.copy(conversionValue = convertValue * it.conversionRate)
         }
     }
 
