@@ -36,6 +36,7 @@ import io.ktor.client.HttpClient
 import org.example.czechtoeuroconvertionestimator.data.ConvertorClient
 import org.example.czechtoeuroconvertionestimator.data.repositories.ConvertorRepositoryImpl
 import org.example.czechtoeuroconvertionestimator.domain.repositories.ConvertorRepository
+import org.example.czechtoeuroconvertionestimator.presentation.ConversionScreen
 import org.example.czechtoeuroconvertionestimator.presentation.ConvertorViewModel
 import org.example.czechtoeuroconvertionestimator.util.toMoneyValue
 import org.jetbrains.compose.resources.painterResource
@@ -50,7 +51,6 @@ fun App(client: ConvertorClient) {
         var valueToBeConverted by remember { mutableStateOf("") }
         val repository = ConvertorRepositoryImpl(client)
         val viewModel = ConvertorViewModel(repository)
-
         val state by viewModel.state.collectAsState()
 
         LaunchedEffect(Unit) {
@@ -61,18 +61,14 @@ fun App(client: ConvertorClient) {
                 TopAppBar(
                     title = { Text(text = "Czk To Euro Conversion") }
                 )
-            },
-            modifier = Modifier
+            }, modifier = Modifier
         ) { innerPadding ->
             Column(
-                modifier = Modifier
-                    .safeContentPadding()
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                modifier = Modifier.safeContentPadding().fillMaxSize().padding(innerPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextField(
-                    value = valueToBeConverted,
+                ConversionScreen(
+                    valueToBeConverted = valueToBeConverted,
                     onValueChange = {
                         valueToBeConverted = it
                         if (it.isNotBlank()) {
@@ -82,34 +78,16 @@ fun App(client: ConvertorClient) {
                             showResult = false
                         }
                     },
-                    placeholder = { Text("Please Enter A Value") },
-                    singleLine = true,
                     supportingText = { if (state.conversionRate != 0F) Text(text = "Czech Koruna per 1 Euro = ${state.conversionRate} ") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    trailingIcon = {
+                    valueToBeConvertedTrailingIcon = {
                         Text(text = "Kč")
                     },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                AnimatedVisibility(showResult) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Spacer(modifier = Modifier.size(10.dp))
-                        TextField(
-                            value = state.conversionValue.toMoneyValue(),
-                            onValueChange = {},
-                            singleLine = true,
-                            readOnly = true,
-                            trailingIcon = {
-                                Text("€")
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                    showResult = showResult,
+                    resultTextFieldValue = state.conversionValue.toMoneyValue(),
+                    resultTextFieldTrailingIcon = {
+                        Text("€")
                     }
-                }
+                )
             }
         }
     }
