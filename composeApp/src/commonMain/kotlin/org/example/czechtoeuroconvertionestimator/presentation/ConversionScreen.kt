@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ConversionScreen(
@@ -21,9 +22,9 @@ fun ConversionScreen(
     onValueChange: (String) -> Unit,
     supportingText: @Composable () -> Unit,
     valueToBeConvertedTrailingIcon: @Composable () -> Unit,
-    showResult : Boolean,
+    showResult: Boolean,
     resultTextFieldValue: String,
-    resultTextFieldTrailingIcon: @Composable () -> Unit
+    resultTextFieldTrailingIcon: @Composable () -> Unit,
 ) {
     Column(
         modifier = Modifier,
@@ -57,4 +58,21 @@ fun ConversionScreen(
             }
         }
     }
+}
+
+@Composable
+@Preview
+fun PreviewConversionScreen() {
+    ConversionScreen(
+        modifier = Modifier,
+        valueToBeConverted = "1000",
+        onValueChange = {},
+        supportingText = {
+            Text("Test")
+        },
+        valueToBeConvertedTrailingIcon = { Text("€") },
+        showResult = true,
+        resultTextFieldValue = "2000",
+        resultTextFieldTrailingIcon = { Text("€") }
+    )
 }

@@ -39,11 +39,14 @@ fun App(client: ConvertorClient) {
         LaunchedEffect(Unit) {
             viewModel.getConversionRate()
         }
+
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = "Czk To Euro Conversion") })
-            }, modifier = Modifier
+                    title = { Text(text = "Czk To Euro Conversion") }
+                )
+            },
+            modifier = Modifier
         ) { innerPadding ->
             Column(
                 modifier = Modifier.safeContentPadding().fillMaxSize().padding(innerPadding),
@@ -53,7 +56,7 @@ fun App(client: ConvertorClient) {
                     valueToBeConverted = valueToBeConverted,
                     onValueChange = {
                         valueToBeConverted = it
-                        if (it.isNotBlank()) {
+                        if (it.isNotBlank() && it.toFloatOrNull() != null) {
                             viewModel.convert(it.toFloat())
                             showResult = true
                         } else {
@@ -62,7 +65,7 @@ fun App(client: ConvertorClient) {
                     },
                     supportingText = {
                         if (state.conversionRate != 0F) {
-                            Text(text = "Czech Koruna per 1 Euro = ${state.conversionRate} ")
+                            Text(text = "Czech Koruna per 1 Euro = ${state.conversionRate}")
                         }
                     },
                     valueToBeConvertedTrailingIcon = {
@@ -72,7 +75,9 @@ fun App(client: ConvertorClient) {
                     resultTextFieldValue = state.conversionValue.toMoneyValue(),
                     resultTextFieldTrailingIcon = {
                         Text("€")
-                    })
+                    },
+                    modifier = Modifier
+                )
             }
         }
     }
