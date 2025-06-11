@@ -18,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import org.example.czechtoeuroconvertionestimator.data.ConvertorClient
 import org.example.czechtoeuroconvertionestimator.data.repositories.ConvertorRepositoryImpl
 import org.example.czechtoeuroconvertionestimator.presentation.ConversionScreen
@@ -28,12 +30,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun App(client: ConvertorClient) {
+fun App(client: ConvertorClient, prefs: DataStore<Preferences>) {
     MaterialTheme {
         var showResult by remember { mutableStateOf(false) }
         var valueToBeConverted by remember { mutableStateOf("") }
         val repository = ConvertorRepositoryImpl(client)
-        val viewModel = ConvertorViewModel(repository)
+        val viewModel = ConvertorViewModel(repository, prefs)
         val state by viewModel.state.collectAsState()
 
         LaunchedEffect(Unit) {

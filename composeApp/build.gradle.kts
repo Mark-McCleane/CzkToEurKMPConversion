@@ -47,6 +47,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.bundles.ktor)
             implementation(libs.kotlinx.coroutines.core)
+            api(libs.androidx.datastore.preferences)
+            api(libs.datastore)
+
         }
 
 //        maybe use nativeMain.dependencies {  }

@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.remember
 import org.example.czechtoeuroconvertionestimator.data.ConvertorClient
 import org.example.czechtoeuroconvertionestimator.data.createHttpClient
+import org.example.czechtoeuroconvertionestimator.data.local.createDataStore
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,6 +20,9 @@ class MainActivity : ComponentActivity() {
                     ConvertorClient(
                         createHttpClient(engine = io.ktor.client.engine.okhttp.OkHttp.create())
                     )
+                },
+                prefs = remember {
+                    createDataStore(applicationContext)
                 }
             )
         }
